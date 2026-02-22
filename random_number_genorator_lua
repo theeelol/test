@@ -1,0 +1,81 @@
+#!/usr/bin/env lua
+
+-- Simple random number generator CLI.
+
+local function print_usage()
+  io.stderr:write("Usage: lua random_number_generator.lua [--min N] [--max N] [--count N]\n")
+end
+
+local function parse_args(argv)
+  local options = {
+    minimum = 1,
+    maximum = 100,
+    count = 1,
+  }
+
+  local i = 1
+  while i <= #argv do
+    local arg = argv[i]
+
+    if arg == "--min" then
+      i = i + 1
+      options.minimum = tonumber(argv[i])
+    elseif arg == "--max" then
+      i = i + 1
+      options.maximum = tonumber(argv[i])
+    elseif arg == "--count" then
+      i = i + 1
+      options.count = tonumber(argv[i])
+    else
+      io.stderr:write("Unknown argument: " .. tostring(arg) .. "\n")
+      print_usage()
+      os.exit(1)
+    end
+
+    if argv[i] == nil then
+      io.stderr:write("Missing value for option.\n")
+      print_usage()
+      os.exit(1)
+    end
+
+    i = i + 1
+  end
+
+  if options.minimum == nil or options.maximum == nil or options.count == nil then
+    io.stderr:write("All option values must be valid numbers.\n")
+    print_usage()
+    os.exit(1)
+  end
+
+  if options.minimum > options.maximum then
+    io.stderr:write("--min must be less than or equal to --max\n")
+    os.exit(1)
+  end
+
+  if options.count < 1 or options.count % 1 ~= 0 then
+    io.stderr:write("--count must be a positive integer\n")
+    os.exit(1)
+  end
+
+  return options
+end
+
+local function generate_random_numbers(minimum, maximum, count)
+  local numbers = {}
+  for _ = 1, count do
+    table.insert(numbers, math.random(minimum, maximum))
+  end
+  return numbers
+end
+
+local function main()
+  math.randomseed(os.time())
+  local opts = parse_args(arg)
+  local numbers = generate_random_numbers(opts.minimum, opts.maximum, opts.count)
+
+  for _, number in ipairs(numbers) do
+    print(number)
+  end
+end
+
+main()
