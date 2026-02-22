@@ -1,7 +1,3 @@
-#!/usr/bin/env lua
-
--- Simple random number generator CLI.
-
 local function print_usage()
   io.stderr:write("Usage: lua random_number_generator.lua [--min N] [--max N] [--count N]\n")
 end
